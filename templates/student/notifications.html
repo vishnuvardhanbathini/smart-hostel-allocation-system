@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - Smart Hostel Allocation System{% endblock %}
+{% block page_title %}Notification Center{% endblock %}
+{% block breadcrumb %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-6">
+                        <i class="fa-solid fa-bell text-primary me-2"></i> All System Alerts & Notifications
+                    </span>
+                    <span class="badge bg-light text-muted border">{{ notifications|length }} Total</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for notif in notifications %}
+                        <div class="list-group-item p-4 d-flex align-items-start gap-3">
+                            <div class="rounded-circle {% if notif.notification_type == 'success' %}bg-success bg-opacity-10 text-success{% elif notif.notification_type == 'danger' %}bg-danger bg-opacity-10 text-danger{% else %}bg-primary bg-opacity-10 text-primary{% endif %} d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px;">
+                                {% if notif.notification_type == 'success' %}
+                                <i class="fa-solid fa-check fs-5"></i>
+                                {% elif notif.notification_type == 'danger' %}
+                                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                                {% else %}
+                                <i class="fa-solid fa-info fs-5"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="fw-bold text-navy mb-0">{{ notif.title }}</h6>
+                                    <small class="text-muted">{{ notif.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                </div>
+                                <p class="text-muted small mb-2">{{ notif.message }}</p>
+                                {% if notif.link %}
+                                <a href="{{ notif.link }}" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.8rem;">
+                                    View Details <i class="fa-solid fa-chevron-right ms-1"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="fa-regular fa-bell-slash fs-1 mb-2"></i>
+                            <div>You have no notifications at this time.</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

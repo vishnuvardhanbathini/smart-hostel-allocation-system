@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}My Profile - Smart Hostel Allocation System{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+{% block breadcrumb %}Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-6">
+                        <i class="fa-solid fa-id-card text-primary me-2"></i> Student Profile & Guardian Information
+                    </span>
+                    <span class="badge bg-light text-dark border font-monospace">{{ student.student_id }}</span>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <!-- Read-only Academic Summary -->
+                        <h6 class="fw-bold text-primary mb-3 pb-2 border-bottom">
+                            <i class="fa-solid fa-graduation-cap me-2"></i> Academic Record (Fixed by Registrar)
+                        </h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Full Legal Name</label>
+                                <input type="text" class="form-control bg-light" value="{{ student.full_name }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Student ID / Roll No</label>
+                                <input type="text" class="form-control bg-light font-monospace" value="{{ student.student_id }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Department</label>
+                                <input type="text" class="form-control bg-light" value="{{ student.department }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Year of Study</label>
+                                <input type="text" class="form-control bg-light" value="Year {{ student.year_of_study }}" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold">Gender</label>
+                                <input type="text" class="form-control bg-light" value="{{ student.gender }}" readonly>
+                            </div>
+                        </div>
+
+                        <!-- Editable Contact Details -->
+                        <h6 class="fw-bold text-primary mb-3 pb-2 border-bottom">
+                            <i class="fa-solid fa-phone me-2"></i> Contact & Guardian Details (Editable)
+                        </h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label small fw-semibold">My Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Registered Email</label>
+                                <input type="email" class="form-control bg-light" value="{{ student.email }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="parent_name" class="form-label small fw-semibold">Parent / Guardian Name</label>
+                                <input type="text" class="form-control" id="parent_name" name="parent_name" value="{{ student.parent_name or '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="parent_phone" class="form-label small fw-semibold">Parent Phone Number</label>
+                                <input type="tel" class="form-control" id="parent_phone" name="parent_phone" value="{{ student.parent_phone or '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="emergency_contact" class="form-label small fw-semibold">Emergency Contact Number</label>
+                                <input type="tel" class="form-control" id="emergency_contact" name="emergency_contact" value="{{ student.emergency_contact or '' }}">
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label small fw-semibold">Permanent Residential Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2">{{ student.address or '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Security / Password Update -->
+                        <h6 class="fw-bold text-primary mb-3 pb-2 border-bottom">
+                            <i class="fa-solid fa-key me-2"></i> Account Security
+                        </h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="new_password" class="form-label small fw-semibold">Change Password (leave blank to keep current)</label>
+                                <input type="password" class="form-control" id="new_password" name="new_password" placeholder="Enter new password (min. 6 characters)">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a href="{{ url_for('student.dashboard') }}" class="btn btn-light border px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="fa-solid fa-save me-1"></i> Update Profile Details
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

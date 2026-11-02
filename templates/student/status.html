@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}Application Status - Smart Hostel Allocation System{% endblock %}
+{% block page_title %}Application Status & Tracking{% endblock %}
+{% block breadcrumb %}Status{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            {% if latest_app %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-6">
+                        <i class="fa-solid fa-list-check text-primary me-2"></i> Application #{{ latest_app.id }} - Progress Tracker
+                    </span>
+                    <span class="badge {% if latest_app.status == 'Allocated' %}bg-info{% elif latest_app.status == 'Approved' %}bg-success{% elif latest_app.status == 'Pending' %}bg-warning text-dark{% else %}bg-danger{% endif %} px-3 py-1 rounded-pill">
+                        {{ latest_app.status }}
+                    </span>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Progress Stepper -->
+                    <div class="stepper mb-5">
+                        <!-- Step 1: Applied -->
+                        <div class="step-item completed">
+                            <div class="step-circle"><i class="fa-solid fa-check"></i></div>
+                            <div class="step-title">Application Submitted</div>
+                            <small class="text-muted">{{ latest_app.applied_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        <!-- Step 2: Verification -->
+                        <div class="step-item {% if latest_app.status in ['Approved', 'Allocated'] %}completed{% else %}active{% endif %}">
+                            <div class="step-circle">{% if latest_app.status in ['Approved', 'Allocated'] %}<i class="fa-solid fa-check"></i>{% else %}2{% endif %}</div>
+                            <div class="step-title">Document & CGPA Verification</div>
+                            <small class="text-muted">Academic standing</small>
+                        </div>
+                        <!-- Step 3: Approval -->
+                        <div class="step-item {% if latest_app.status == 'Allocated' %}completed{% elif latest_app.status == 'Approved' %}active{% elif latest_app.status == 'Rejected' %}rejected{% endif %}">
+                            <div class="step-circle">{% if latest_app.status == 'Allocated' %}<i class="fa-solid fa-check"></i>{% elif latest_app.status == 'Rejected' %}<i class="fa-solid fa-times"></i>{% else %}3{% endif %}</div>
+                            <div class="step-title">Admin Review & Approval</div>
+                            <small class="text-muted">{% if latest_app.reviewed_at %}{{ latest_app.reviewed_at.strftime('%b %d') }}{% else %}In Queue{% endif %}</small>
+                        </div>
+                        <!-- Step 4: Room Allocation -->
+                        <div class="step-item {% if latest_app.status == 'Allocated' %}completed{% endif %}">
+                            <div class="step-circle">{% if latest_app.status == 'Allocated' %}<i class="fa-solid fa-check"></i>{% else %}4{% endif %}</div>
+                            <div class="step-title">Smart Bed Allocation</div>
+                            <small class="text-muted">{% if latest_app.status == 'Allocated' %}Completed{% else %}Awaiting Engine Run{% endif %}</small>
+                        </div>
+                    </div>
+
+                    <!-- Application Details Grid -->
+                    <div class="row g-3 p-4 bg-light rounded-4 border mb-4">
+                        <div class="col-sm-6 col-md-3">
+                            <small class="text-muted d-block">Preferred Residence</small>
+                            <span class="fw-bold text-navy">{{ latest_app.preferred_hostel.name }}</span>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <small class="text-muted d-block">Room Preference</small>
+                            <span class="badge bg-white text-dark border">{{ latest_app.preferred_room_type }} Bed</span>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <small class="text-muted d-block">Academic Score</small>
+                            <span class="fw-bold text-primary">{{ latest_app.academic_score }} CGPA</span>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <small class="text-muted d-block">Home Distance</small>
+                            <span class="fw-bold">{{ latest_app.distance_from_home_km|int }} km</span>
+                        </div>
+                    </div>
+
+                    {% if latest_app.admin_remarks %}
+                    <div class="p-3 bg-white border rounded-3 mb-4">
+                        <h6 class="fw-bold text-navy mb-1"><i class="fa-solid fa-comment-dots text-primary me-2"></i> Administrative Remarks</h6>
+                        <p class="text-muted small mb-0">{{ latest_app.admin_remarks }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if allocation %}
+                    <div class="alert alert-success border-0 rounded-3 d-flex justify-content-between align-items-center mb-0">
+                        <div>
+                            <h6 class="fw-bold mb-1"><i class="fa-solid fa-circle-check me-2"></i> Room Allocated!</h6>
+                            <div class="small">You have been allocated Room <strong>{{ allocation.room.room_number }} ({{ allocation.bed_number }})</strong> in {{ allocation.hostel.name }}.</div>
+                        </div>
+                        <a href="{{ url_for('student.room_details') }}" class="btn btn-success btn-sm">
+                            View Room Details <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% else %}
+            <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+                <i class="fa-solid fa-clipboard-question fs-1 text-muted mb-3"></i>
+                <h4 class="fw-bold mb-2">No Application on Record</h4>
+                <p class="text-muted mb-4">You have not submitted a hostel application yet.</p>
+                <div>
+                    <a href="{{ url_for('student.apply') }}" class="btn btn-primary px-4 py-2">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Submit Accommodation Request
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Historical Applications Table -->
+            {% if applications|length > 1 %}
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <span class="fw-bold"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Application History</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Preferred Hostel</th>
+                                <th>Room Type</th>
+                                <th>Applied Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                            <tr>
+                                <td>#{{ app.id }}</td>
+                                <td>{{ app.preferred_hostel.name }}</td>
+                                <td>{{ app.preferred_room_type }}</td>
+                                <td>{{ app.applied_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="badge badge-status {% if app.status == 'Allocated' %}badge-allocated{% elif app.status == 'Approved' %}badge-approved{% elif app.status == 'Pending' %}badge-pending{% else %}badge-rejected{% endif %}">
+                                        {{ app.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

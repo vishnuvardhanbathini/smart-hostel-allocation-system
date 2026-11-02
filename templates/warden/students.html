@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Resident Students - Warden Console{% endblock %}
+{% block page_title %}Hostel Resident Directory{% endblock %}
+{% block breadcrumb %}{{ hostel.name }} / Students{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold mb-0">Assigned Residents ({{ allocations|length }})</h4>
+            <p class="text-muted small mb-0">Active residents living in <strong>{{ hostel.name }}</strong></p>
+        </div>
+        <div>
+            <form method="GET" action="{{ url_for('warden.students') }}" class="d-flex gap-2">
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Search student name, roll no, dept..." value="{{ search }}" style="width: 250px;">
+                <button type="submit" class="btn btn-sm btn-navy"><i class="fa-solid fa-search"></i></button>
+                {% if search %}
+                <a href="{{ url_for('warden.students') }}" class="btn btn-sm btn-light border"><i class="fa-solid fa-rotate-left"></i></a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Student Roll No</th>
+                        <th>Full Name</th>
+                        <th>Room & Bed</th>
+                        <th>Department & Year</th>
+                        <th>Phone</th>
+                        <th>Parent / Guardian</th>
+                        <th>Emergency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alloc in allocations %}
+                    <tr>
+                        <td><span class="badge bg-light text-dark border font-monospace">{{ alloc.student.student_id }}</span></td>
+                        <td>
+                            <div class="fw-bold text-navy">{{ alloc.student.full_name }}</div>
+                            <div class="text-muted text-xs" style="font-size: 0.72rem;">{{ alloc.student.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                                Room {{ alloc.room.room_number }} ({{ alloc.bed_number }})
+                            </span>
+                        </td>
+                        <td>
+                            <div>{{ alloc.student.department }}</div>
+                            <span class="badge bg-light text-muted border text-xs" style="font-size: 0.7rem;">Year {{ alloc.student.year_of_study }}</span>
+                        </td>
+                        <td>
+                            <a href="tel:{{ alloc.student.phone }}" class="text-decoration-none">
+                                <i class="fa-solid fa-phone me-1 text-primary"></i> {{ alloc.student.phone }}
+                            </a>
+                        </td>
+                        <td>
+                            <div>{{ alloc.student.parent_name or 'N/A' }}</div>
+                            <div class="text-muted text-xs" style="font-size: 0.72rem;">{{ alloc.student.parent_phone or 'N/A' }}</div>
+                        </td>
+                        <td>
+                            <span class="text-danger fw-semibold small">
+                                <i class="fa-solid fa-phone-volume me-1"></i> {{ alloc.student.emergency_contact or 'N/A' }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="fa-solid fa-user-slash fs-2 mb-2"></i>
+                            <div>No resident records found.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

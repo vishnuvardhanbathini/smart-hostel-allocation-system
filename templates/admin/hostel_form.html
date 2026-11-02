@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}{% if hostel %}Edit Hostel - {{ hostel.name }}{% else %}Add New Hostel{% endif %} - Admin{% endblock %}
+{% block page_title %}{% if hostel %}Edit Residence Hall{% else %}Register New Residence Hall{% endif %}{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('admin.hostels') }}" class="text-decoration-none text-muted">Hostels</a> / {% if hostel %}Edit{% else %}Add{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-6">
+                        <i class="fa-solid {% if hostel %}fa-building-pen{% else %}fa-building-circle-plus{% endif %} text-primary me-2"></i>
+                        {% if hostel %}Update Details for {{ hostel.name }}{% else %}Hostel Specifications{% endif %}
+                    </span>
+                    <a href="{{ url_for('admin.hostels') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to Hostels
+                    </a>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <label for="name" class="form-label small fw-semibold">Hostel / Hall Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ hostel.name if hostel else '' }}" placeholder="e.g. SR University Boys Hostel BH-05" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="hostel_type" class="form-label small fw-semibold">Hostel Type <span class="text-danger">*</span></label>
+                                <select class="form-select" id="hostel_type" name="hostel_type" required>
+                                    <option value="Boys" {% if hostel and hostel.hostel_type == 'Boys' %}selected{% endif %}>Boys Hostel</option>
+                                    <option value="Girls" {% if hostel and hostel.hostel_type == 'Girls' %}selected{% endif %}>Girls Hostel</option>
+                                    <option value="Co-ed" {% if hostel and hostel.hostel_type == 'Co-ed' %}selected{% endif %}>Co-ed Hostel</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="total_floors" class="form-label small fw-semibold">Total Floors <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="total_floors" name="total_floors" min="1" max="20" value="{{ hostel.total_floors if hostel else 3 }}" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label for="warden_id" class="form-label small fw-semibold">Assign Residence Warden</label>
+                                <select class="form-select" id="warden_id" name="warden_id">
+                                    <option value="">-- No Warden Assigned --</option>
+                                    {% for warden in wardens %}
+                                    <option value="{{ warden.id }}" {% if hostel and warden.hostel_id == hostel.id %}selected{% endif %}>
+                                        {{ warden.full_name }} ({{ warden.warden_id }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="image_url" class="form-label small fw-semibold">Photo Image URL</label>
+                                <input type="url" class="form-control" id="image_url" name="image_url" value="{{ hostel.image_url if hostel else '' }}" placeholder="https://example.com/hostel.jpg">
+                            </div>
+                            <div class="col-12">
+                                <label for="facilities" class="form-label small fw-semibold">Facilities & Amenities (comma-separated)</label>
+                                <input type="text" class="form-control" id="facilities" name="facilities" value="{{ hostel.facilities if hostel else '' }}" placeholder="Wi-Fi, Gym, Study Lounge, Mess, Laundry, 24x7 Power Backup">
+                            </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label small fw-semibold">Description & Notes</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" placeholder="Brief description of the hostel building, rules, special wings, etc.">{{ hostel.description if hostel else '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <a href="{{ url_for('admin.hostels') }}" class="btn btn-light border px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="fa-solid fa-save me-1"></i> {% if hostel %}Save Changes{% else %}Create Hostel{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% block title %}Smart Room Allocation Hub - Admin{% endblock %}
+{% block page_title %}Smart Room Allocation Engine{% endblock %}
+{% block breadcrumb %}Smart Allocation{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Top Hero Banner / Controller -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 text-white" style="background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 60%, #0284c7 100%);">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="fa-solid fa-microchip me-1"></i> Automated Optimization Engine
+                    </span>
+                    <h3 class="fw-bold mb-2">Intelligent Room & Bed Matching</h3>
+                    <p class="text-white-50 mb-3" style="max-width: 650px;">
+                        The system evaluates academic score (CGPA), home distance, gender constraints, and student room preferences to automatically assign available beds without manual intervention or double-booking.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <form action="{{ url_for('admin.run_smart_allocation') }}" method="POST" class="d-inline-flex align-items-center gap-3">
+                            <button type="submit" class="btn btn-warning btn-lg fw-bold text-dark px-4 shadow">
+                                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Run Smart Auto-Allocation
+                            </button>
+                            <div class="form-check text-white">
+                                <input class="form-check-input" type="checkbox" id="include_pending" name="include_pending" value="on">
+                                <label class="form-check-label small" for="include_pending">
+                                    Include Pending applications
+                                </label>
+                            </div>
+                        </form>
+                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#manualAllocationModal">
+                            <i class="fa-solid fa-hand me-1"></i> Manual Room Assignment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Allocation Stats Counter -->
+                <div class="col-lg-4">
+                    <div class="bg-white bg-opacity-10 rounded-4 p-3 border border-white border-opacity-20 text-center">
+                        <div class="row g-2">
+                            <div class="col-6 border-end border-white border-opacity-20">
+                                <div class="fs-3 fw-bold text-warning">{{ pending_apps|length }}</div>
+                                <div class="small text-white-50">Queued Students</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="fs-3 fw-bold text-info">{{ available_rooms|length }}</div>
+                                <div class="small text-white-50">Available Rooms</div>
+                            </div>
+                            <div class="col-12 mt-2 pt-2 border-top border-white border-opacity-20">
+                                <div class="fs-4 fw-bold text-success">{{ active_allocations|length }}</div>
+                                <div class="small text-white-50">Active Resident Allocations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS: Queued Applications & Active Allocations -->
+    <div class="row g-4">
+        <!-- Left: Queued Candidates Waiting for Allocation -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="fa-solid fa-hourglass-half text-warning me-2"></i> Allocation Queue ({{ pending_apps|length }})</span>
+                    <span class="badge bg-light text-muted border">Priority Ranked</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 480px;">
+                        <table class="table table-hover mb-0">
+                            <thead class="sticky-top bg-light">
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Pref. Hostel</th>
+                                    <th>Type</th>
+                                    <th>CGPA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in pending_apps %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold text-navy">{{ app.student.full_name }}</div>
+                                        <div class="text-muted text-xs" style="font-size: 0.72rem;">
+                                            {{ app.student.student_id }} &bull;
+                                            <span class="badge {% if app.student.gender == 'Male' %}bg-primary{% else %}bg-danger{% endif %} text-xs" style="font-size: 0.65rem;">
+                                                {{ app.student.gender }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small">{{ app.preferred_hostel.name[:14] }}...</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">{{ app.preferred_room_type }}</span></td>
+                                    <td><span class="fw-bold text-primary">{{ app.academic_score }}</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-5">
+                                        <i class="fa-solid fa-circle-check text-success fs-2 mb-2"></i>
+                                        <div>Queue is clear! All applicants have been allocated.</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Active Allocations Directory with Deallocate / Vacate Button -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="fa-solid fa-bed text-success me-2"></i> Active Room Allocations ({{ active_allocations|length }})</span>
+                    <input type="text" class="form-control form-control-sm" style="max-width: 200px;" placeholder="Search resident..." data-table-search="activeAllocationsTable">
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 480px;">
+                        <table class="table table-hover align-middle mb-0" id="activeAllocationsTable">
+                            <thead class="sticky-top bg-light">
+                                <tr>
+                                    <th>Resident</th>
+                                    <th>Hostel & Room</th>
+                                    <th>Bed No</th>
+                                    <th>Allocated Date</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alloc in active_allocations %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('admin.view_student', student_id=alloc.student.id) }}" class="fw-bold text-navy text-decoration-none">
+                                            {{ alloc.student.full_name }}
+                                        </a>
+                                        <div class="text-muted text-xs" style="font-size: 0.72rem;">{{ alloc.student.student_id }} &bull; {{ alloc.student.department[:14] }}...</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">{{ alloc.hostel.name }}</div>
+                                        <div class="text-muted text-xs" style="font-size: 0.72rem;">Room {{ alloc.room.room_number }} (Floor {{ alloc.room.floor }})</div>
+                                    </td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ alloc.bed_number }}</span></td>
+                                    <td><span class="text-muted small">{{ alloc.allocated_date.strftime('%b %d, %Y') }}</span></td>
+                                    <td class="text-end">
+                                        <form action="{{ url_for('admin.vacate_allocation', alloc_id=alloc.id) }}" method="POST" class="d-inline" data-confirm="Vacate allocation for {{ alloc.student.full_name }}? Bed will become immediately available.">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Vacate Room">
+                                                <i class="fa-solid fa-door-open"></i> Vacate
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-5">No active allocations found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MANUAL ALLOCATION MODAL -->
+<div class="modal fade" id="manualAllocationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{{ url_for('admin.manual_allocation') }}" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-hand me-2 text-primary"></i> Manual Room Allocation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="student_id" class="form-label small fw-semibold">Select Candidate Student <span class="text-danger">*</span></label>
+                            <select class="form-select" id="student_id" name="student_id" required>
+                                <option value="">-- Choose Student --</option>
+                                {% for app in pending_apps %}
+                                <option value="{{ app.student.id }}">
+                                    {{ app.student.full_name }} ({{ app.student.student_id }}) - {{ app.student.gender }} [CGPA: {{ app.academic_score }}]
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="room_id" class="form-label small fw-semibold">Select Available Room <span class="text-danger">*</span></label>
+                            <select class="form-select" id="room_id" name="room_id" required>
+                                <option value="">-- Choose Available Room --</option>
+                                {% for r in available_rooms %}
+                                <option value="{{ r.id }}">
+                                    {{ r.hostel.name }} - Room {{ r.room_number }} ({{ r.room_type }}, {{ r.available_beds }} beds vacant) [{{ r.hostel.hostel_type }} Hostel]
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bed_number" class="form-label small fw-semibold">Bed Identifier</label>
+                            <input type="text" class="form-control" id="bed_number" name="bed_number" placeholder="e.g. Bed-1, Bed-A (auto if empty)">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="academic_year" class="form-label small fw-semibold">Academic Year</label>
+                            <input type="text" class="form-control" id="academic_year" name="academic_year" value="2024-2025" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check me-1"></i> Allocate Selected Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

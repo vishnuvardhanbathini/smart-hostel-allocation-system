@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Apply for Hostel Accommodation - Smart Hostel Allocation System{% endblock %}
+{% block page_title %}Hostel Accommodation Application{% endblock %}
+{% block breadcrumb %}Application Form{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <span class="fw-bold fs-6">
+                        <i class="fa-solid fa-paper-plane text-primary me-2"></i> Submit Accommodation Request (2024-2025)
+                    </span>
+                    <span class="badge {% if student.gender == 'Male' %}bg-primary{% else %}bg-danger{% endif %} rounded-pill px-3">
+                        {{ student.gender }} Student Pool
+                    </span>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Policy notice banner -->
+                    <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-center gap-3">
+                        <i class="fa-solid fa-circle-info fs-3 text-info"></i>
+                        <div class="small">
+                            <strong>Allocation Criteria:</strong> Rooms are allocated using a smart merit-distance matching engine. Higher academic scores and greater distances from home receive priority during batch assignment.
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('student.apply') }}">
+                        <div class="row g-3 mb-4">
+                            <!-- Preferred Hostel -->
+                            <div class="col-md-6">
+                                <label for="preferred_hostel_id" class="form-label small fw-semibold">
+                                    Preferred Residence Hall <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="preferred_hostel_id" name="preferred_hostel_id" required>
+                                    <option value="">-- Choose Eligible Residence Hall --</option>
+                                    {% for h in hostels %}
+                                    <option value="{{ h.id }}">
+                                        {{ h.name }} ({{ h.available_beds_count }} beds vacant)
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text small">Showing only {{ student.gender }} residence halls.</div>
+                            </div>
+
+                            <!-- Preferred Room Type -->
+                            <div class="col-md-6">
+                                <label for="preferred_room_type" class="form-label small fw-semibold">
+                                    Preferred Room Configuration <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select" id="preferred_room_type" name="preferred_room_type" required>
+                                    <option value="Single">Single Bed Room (Premium / AC)</option>
+                                    <option value="Double" selected>Double Bed Room (Standard Shared)</option>
+                                    <option value="Triple">Triple Bed Room (Economy Shared)</option>
+                                </select>
+                            </div>
+
+                            <!-- Academic Score (CGPA) -->
+                            <div class="col-md-6">
+                                <label for="academic_score" class="form-label small fw-semibold">
+                                    Current Cumulative GPA (CGPA / Score) <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" step="0.01" min="0" max="10" class="form-control" id="academic_score" name="academic_score" value="8.50" required>
+                                <div class="form-text small">Verified against university examination database.</div>
+                            </div>
+
+                            <!-- Distance from Home -->
+                            <div class="col-md-6">
+                                <label for="distance_from_home_km" class="form-label small fw-semibold">
+                                    Distance from Permanent Home Address (km) <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" step="1" min="1" max="5000" class="form-control" id="distance_from_home_km" name="distance_from_home_km" value="150" required>
+                                <div class="form-text small">Calculated from permanent address to campus.</div>
+                            </div>
+
+                            <!-- Special remarks -->
+                            <div class="col-12">
+                                <label for="special_remarks" class="form-label small fw-semibold">Special Requirements / Medical Requests</label>
+                                <textarea class="form-control" id="special_remarks" name="special_remarks" rows="3" placeholder="e.g. Ground floor preference due to sports injury, dietary preferences, or study requirements."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Declaration -->
+                        <div class="form-check mb-4 p-3 bg-light rounded-3 border">
+                            <input class="form-check-input ms-0 me-2" type="checkbox" id="declaration" required>
+                            <label class="form-check-label small text-muted" for="declaration">
+                                I confirm that the details provided are accurate and understand that room allocation is subject to university housing policies, room availability, and merit rankings.
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('student.dashboard') }}" class="btn btn-light border px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Submit Hostel Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

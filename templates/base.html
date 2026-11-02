@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Hostel Allocation System{% endblock %} | University Portal</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if session.get('user_id') %}
+<!-- ==================== AUTHENTICATED DASHBOARD LAYOUT ==================== -->
+<div class="app-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="fa-solid fa-hotel"></i>
+            </div>
+            <div>
+                <a href="{{ url_for('main.index') }}" class="sidebar-brand-text">SmartHostel</a>
+                <div class="text-xs text-light opacity-75" style="font-size: 0.72rem;">Campus Housing Suite</div>
+            </div>
+            <button class="btn btn-sm text-white d-lg-none ms-auto" id="sidebarClose">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-nav">
+            {% if session.get('role') == 'admin' %}
+                <!-- ADMIN NAVIGATION -->
+                <div class="nav-section-title">Core Management</div>
+                <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge"></i> <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin.smart_allocation') }}" class="sidebar-link {% if request.endpoint == 'admin.smart_allocation' %}active{% endif %}">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warning"></i> <span>Smart Allocation</span>
+                </a>
+                <a href="{{ url_for('admin.applications') }}" class="sidebar-link {% if request.endpoint == 'admin.applications' %}active{% endif %}">
+                    <i class="fa-solid fa-file-signature"></i> <span>Applications</span>
+                </a>
+
+                <div class="nav-section-title">Hostel & Housing</div>
+                <a href="{{ url_for('admin.hostels') }}" class="sidebar-link {% if 'hostel' in request.endpoint %}active{% endif %}">
+                    <i class="fa-solid fa-building"></i> <span>Hostels</span>
+                </a>
+                <a href="{{ url_for('admin.rooms') }}" class="sidebar-link {% if 'room' in request.endpoint %}active{% endif %}">
+                    <i class="fa-solid fa-door-open"></i> <span>Rooms & Beds</span>
+                </a>
+                <a href="{{ url_for('admin.students') }}" class="sidebar-link {% if 'student' in request.endpoint and 'admin' in request.endpoint %}active{% endif %}">
+                    <i class="fa-solid fa-user-graduate"></i> <span>Student Records</span>
+                </a>
+
+                <div class="nav-section-title">Support & Logs</div>
+                <a href="{{ url_for('admin.complaints') }}" class="sidebar-link {% if request.endpoint == 'admin.complaints' %}active{% endif %}">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span>Complaints</span>
+                </a>
+                <a href="{{ url_for('admin.notices') }}" class="sidebar-link {% if request.endpoint == 'admin.notices' %}active{% endif %}">
+                    <i class="fa-solid fa-bullhorn"></i> <span>Notice Board</span>
+                </a>
+                <a href="{{ url_for('admin.reports') }}" class="sidebar-link {% if request.endpoint == 'admin.reports' %}active{% endif %}">
+                    <i class="fa-solid fa-chart-pie"></i> <span>Reports & Analytics</span>
+                </a>
+
+            {% elif session.get('role') == 'warden' %}
+                <!-- WARDEN NAVIGATION -->
+                <div class="nav-section-title">Hostel Supervision</div>
+                <a href="{{ url_for('warden.dashboard') }}" class="sidebar-link {% if request.endpoint == 'warden.dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge"></i> <span>Warden Dashboard</span>
+                </a>
+                <a href="{{ url_for('warden.rooms') }}" class="sidebar-link {% if request.endpoint == 'warden.rooms' %}active{% endif %}">
+                    <i class="fa-solid fa-door-open"></i> <span>Room Occupancy</span>
+                </a>
+                <a href="{{ url_for('warden.students') }}" class="sidebar-link {% if request.endpoint == 'warden.students' %}active{% endif %}">
+                    <i class="fa-solid fa-users"></i> <span>Assigned Students</span>
+                </a>
+                <a href="{{ url_for('warden.complaints') }}" class="sidebar-link {% if request.endpoint == 'warden.complaints' %}active{% endif %}">
+                    <i class="fa-solid fa-wrench"></i> <span>Student Complaints</span>
+                </a>
+                <a href="{{ url_for('warden.notices') }}" class="sidebar-link {% if request.endpoint == 'warden.notices' %}active{% endif %}">
+                    <i class="fa-solid fa-bullhorn"></i> <span>Hostel Notices</span>
+                </a>
+
+            {% else %}
+                <!-- STUDENT NAVIGATION -->
+                <div class="nav-section-title">Student Portal</div>
+                <a href="{{ url_for('student.dashboard') }}" class="sidebar-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge"></i> <span>My Dashboard</span>
+                </a>
+                <a href="{{ url_for('student.apply') }}" class="sidebar-link {% if request.endpoint == 'student.apply' %}active{% endif %}">
+                    <i class="fa-solid fa-paper-plane"></i> <span>Hostel Application</span>
+                </a>
+                <a href="{{ url_for('student.application_status') }}" class="sidebar-link {% if request.endpoint == 'student.application_status' %}active{% endif %}">
+                    <i class="fa-solid fa-list-check"></i> <span>Application Status</span>
+                </a>
+                <a href="{{ url_for('student.room_details') }}" class="sidebar-link {% if request.endpoint == 'student.room_details' %}active{% endif %}">
+                    <i class="fa-solid fa-bed"></i> <span>My Room & Roommates</span>
+                </a>
+                <a href="{{ url_for('student.complaints') }}" class="sidebar-link {% if request.endpoint == 'student.complaints' %}active{% endif %}">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <span>File Complaint</span>
+                </a>
+                <a href="{{ url_for('student.notices') }}" class="sidebar-link {% if request.endpoint == 'student.notices' %}active{% endif %}">
+                    <i class="fa-solid fa-bullhorn"></i> <span>Hostel Notices</span>
+                </a>
+                <a href="{{ url_for('student.profile') }}" class="sidebar-link {% if request.endpoint == 'student.profile' %}active{% endif %}">
+                    <i class="fa-solid fa-id-card"></i> <span>My Profile</span>
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle bg-primary bg-opacity-25 text-white d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; font-weight: 700;">
+                    {{ session.get('display_name', 'U')[:1] }}
+                </div>
+                <div class="overflow-hidden">
+                    <div class="text-white text-truncate fw-semibold" style="font-size: 0.85rem;">{{ session.get('display_name') }}</div>
+                    <div class="text-muted text-capitalize text-xs" style="font-size: 0.72rem;"><span class="badge bg-secondary">{{ session.get('role') }}</span></div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-sm btn-outline-danger ms-auto" title="Logout" data-bs-toggle="tooltip">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOP NAVBAR -->
+        <header class="top-navbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-light border d-lg-none" id="sidebarToggle">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-header-info">
+                    <h5 class="mb-0 fw-bold">{% block page_title %}Dashboard{% endblock %}</h5>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" style="font-size: 0.78rem;">
+                            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-muted text-decoration-none">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{% block breadcrumb %}Overview{% endblock %}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                {% if session.get('role') == 'student' %}
+                <!-- Notifications Dropdown -->
+                <div class="dropdown">
+                    <a href="{{ url_for('student.notifications') }}" class="btn btn-sm btn-light border position-relative rounded-pill px-3">
+                        <i class="fa-regular fa-bell text-secondary"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                            {{ unread_notifications_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light border dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-user-circle text-primary"></i>
+                        <span class="fw-medium d-none d-md-inline">{{ session.get('display_name') }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-2" style="border-radius: 10px;">
+                        <li><h6 class="dropdown-header">Signed in as <strong>{{ session.get('username') }}</strong></h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        {% if session.get('role') == 'student' %}
+                        <li><a class="dropdown-item" href="{{ url_for('student.profile') }}"><i class="fa-solid fa-user me-2 text-muted"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('student.room_details') }}"><i class="fa-solid fa-bed me-2 text-muted"></i> My Room</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-power-off me-2"></i> Log Out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- FLASH MESSAGES -->
+        <div class="container-fluid px-4 pt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2 py-2 mb-3" role="alert">
+                            {% if category == 'success' %}
+                                <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                            {% elif category == 'danger' %}
+                                <i class="fa-solid fa-triangle-exclamation text-danger fs-5"></i>
+                            {% elif category == 'warning' %}
+                                <i class="fa-solid fa-circle-exclamation text-warning fs-5"></i>
+                            {% else %}
+                                <i class="fa-solid fa-circle-info text-info fs-5"></i>
+                            {% endif %}
+                            <div class="flex-grow-1" style="font-size: 0.9rem;">{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- CONTENT BODY -->
+        <main class="content-body">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- DASHBOARD FOOTER -->
+        <footer class="mt-auto py-3 px-4 bg-white border-top text-center text-muted text-xs" style="font-size: 0.8rem;">
+            &copy; {{ current_year }} Smart Hostel Allocation System &bull; University Residential Campus Services &bull; SESD Academic Project
+        </footer>
+    </div>
+</div>
+
+{% else %}
+<!-- ==================== PUBLIC LAYOUT ==================== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-navy sticky-top shadow-sm py-3" style="background-color: var(--navy-darkest) !important;">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ url_for('main.index') }}">
+            <div class="rounded-3 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                <i class="fa-solid fa-hotel"></i>
+            </div>
+            <span>Smart<span class="text-info">Hostel</span></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="publicNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('main.index') }}#hostels">Hostels</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('main.index') }}#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('main.index') }}#about">About</a>
+                </li>
+                <li class="nav-item ms-lg-2">
+                    <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('auth.login') }}">
+                        <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Log In
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary btn-sm px-3" href="{{ url_for('auth.register') }}">
+                        <i class="fa-solid fa-user-plus me-1"></i> Register as Student
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- FLASH MESSAGES PUBLIC -->
+<div class="container pt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2 mb-3" role="alert">
+                    <div class="flex-grow-1" style="font-size: 0.9rem;">{{ message }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<main class="flex-grow-1">
+    {% block public_content %}{% endblock %}
+</main>
+
+<footer class="bg-navy text-white py-4 mt-auto border-top border-secondary border-opacity-25" style="background-color: var(--navy-darkest) !important;">
+    <div class="container text-center text-md-start">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <h6 class="fw-bold mb-1">Smart Hostel Allocation System</h6>
+                <p class="text-white-50 small mb-0">Empowering university residential life through intelligent automated room allocation and digital management.</p>
+            </div>
+            <div class="col-md-6 text-md-end text-white-50 small">
+                &copy; {{ current_year }} University Campus Life. SESD Capstone Project.
+            </div>
+        </div>
+    </div>
+</footer>
+{% endif %}
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
+
