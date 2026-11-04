@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏨 Smart Hostel Allocation System
 
 An enterprise-grade, modern, and fully functional web application designed for university residential housing management, automated room allocation, real-time occupancy tracking, and student grievance redressal.
@@ -145,3 +146,7 @@ The SQLite database comprises 9 relational tables:
 ## 📄 License
 Academic Coursework Demonstration &bull; SESD Capstone Project &copy; 2024-2025.
 
+=======
+# smart-hostel-allocation-system
+Smart Hostel Allocation and Management System using Python Flask
+>>>>>>> 3e66a49e035ae41fb304bf2789aec855b469e318
