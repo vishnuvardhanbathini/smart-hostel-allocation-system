@@ -20,20 +20,20 @@ class VercelPathFixer:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
-        # 1. Check for Vercel forwarded headers
+        # 1. Prefer the original client URI if forwarded by proxy
         forwarded = (
             environ.get('HTTP_X_FORWARDED_URI')
-            or environ.get('HTTP_X_MATCHED_PATH')
-            or environ.get('HTTP_X_NOW_ROUTE_MATCHES')
+            or environ.get('RAW_URI')
+            or environ.get('REQUEST_URI')
         )
         if forwarded:
             clean_path = forwarded.split('?')[0]
-            if clean_path:
+            if clean_path and not clean_path.startswith('/api/index'):
                 environ['PATH_INFO'] = clean_path
 
-        # 2. If PATH_INFO starts with /api/index, strip that prefix
+        # 2. If PATH_INFO is literally /api/index or /api, map to /
         path_info = environ.get('PATH_INFO', '')
-        if path_info == '/api/index' or path_info == '/api':
+        if path_info in ('/api/index', '/api'):
             environ['PATH_INFO'] = '/'
         elif path_info.startswith('/api/index/'):
             environ['PATH_INFO'] = path_info[len('/api/index'):]

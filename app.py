@@ -70,10 +70,18 @@ def create_app(test_config=None):
             current_year=2024
         )
 
-    # Graceful 404 handler
+    # Explicit static handler fallback for serverless deployments
+    @app.route('/static/<path:filename>')
+    def custom_static_serve(filename):
+        from flask import send_from_directory
+        return send_from_directory(os.path.join(basedir, 'static'), filename)
+
+    # Graceful 404 handler (excludes static files to avoid serving HTML for missing assets)
     @app.errorhandler(404)
     def handle_404(e):
-        from flask import redirect, url_for, flash
+        from flask import request, redirect, url_for, flash
+        if request.path.startswith('/static/'):
+            return "Static resource not found", 404
         flash('The requested page was not found. Redirected to home.', 'info')
         return redirect(url_for('main.index'))
 
