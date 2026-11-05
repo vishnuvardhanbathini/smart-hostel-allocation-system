@@ -70,6 +70,13 @@ def create_app(test_config=None):
             current_year=2024
         )
 
+    # Graceful 404 handler
+    @app.errorhandler(404)
+    def handle_404(e):
+        from flask import redirect, url_for, flash
+        flash('The requested page was not found. Redirected to home.', 'info')
+        return redirect(url_for('main.index'))
+
     # Database initialization & automatic seeding
     with app.app_context():
         db.create_all()

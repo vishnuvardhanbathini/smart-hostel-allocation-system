@@ -7,8 +7,39 @@ parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-# Import the initialized Flask application instance
 from app import app
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-# 'app' is the WSGI entrypoint exposed for Vercel Serverless Functions
+class VercelPathFixer:
+    """
+    WSGI Middleware for Vercel serverless deployment.
+    Normalizes PATH_INFO when Vercel rewrites requests to /api/index,
+    ensuring Flask routes receive the exact user-requested path.
+    """
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
 
+    def __call__(self, environ, start_response):
+        # 1. Check for Vercel forwarded headers
+        forwarded = (
+            environ.get('HTTP_X_FORWARDED_URI')
+            or environ.get('HTTP_X_MATCHED_PATH')
+            or environ.get('HTTP_X_NOW_ROUTE_MATCHES')
+        )
+        if forwarded:
+            clean_path = forwarded.split('?')[0]
+            if clean_path:
+                environ['PATH_INFO'] = clean_path
+
+        # 2. If PATH_INFO starts with /api/index, strip that prefix
+        path_info = environ.get('PATH_INFO', '')
+        if path_info == '/api/index' or path_info == '/api':
+            environ['PATH_INFO'] = '/'
+        elif path_info.startswith('/api/index/'):
+            environ['PATH_INFO'] = path_info[len('/api/index'):]
+
+        return self.wsgi_app(environ, start_response)
+
+# Apply proxy fix and path normalization for Vercel
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+app.wsgi_app = VercelPathFixer(app.wsgi_app)

@@ -3,6 +3,10 @@ from models import db, Hostel, Room, Student, Allocation
 
 main_bp = Blueprint('main', __name__)
 
+@main_bp.route('/api/index')
+@main_bp.route('/api')
+@main_bp.route('/home')
+@main_bp.route('/index')
 @main_bp.route('/')
 def index():
     # If already logged in, redirect to respective dashboard
