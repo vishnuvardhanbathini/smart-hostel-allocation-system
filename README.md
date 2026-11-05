@@ -1,152 +1,215 @@
-<<<<<<< HEAD
-# 🏨 Smart Hostel Allocation System
+# 🏨 Smart Hostel Allocation & Management System
 
-An enterprise-grade, modern, and fully functional web application designed for university residential housing management, automated room allocation, real-time occupancy tracking, and student grievance redressal.
+> **Enterprise-grade, modern React 19 Single Page Application (SPA)** designed for university residential housing administration, automated algorithmic room allocation, live bed availability tracking, student grievance redressal, and campus broadcasting.
 
-Built for **Software Engineering and System Design (SESD)** academic capstone evaluation and demonstration.
+Built for **Software Engineering and System Design (SESD)** evaluation and production deployment.
 
----
-
-## 🌟 Key Highlights & Capabilities
-
-- **Intelligent Smart Allocation Engine**: Multi-factor matching considering student gender, preferred residence hall, room configuration (Single/Double/Triple), academic merit (CGPA), and home distance. Automatically prevents double-booking and gender conflicts.
-- **Role-Based Access Control (RBAC)**: Distinct, secure portal interfaces for **Admin**, **Hostel Warden**, and **Student**.
-- **Visual Bed & Room Barometer**: Color-coded live matrix of rooms and beds (Vacant = Green, Partial = Amber, Full = Red) with occupancy percentage indicators.
-- **End-to-End Application Pipeline**: Application submission, academic review, verification, and live visual progress stepper.
-- **Digital Grievance Redressal**: Real-time ticketing for Electricity, Water, Wi-Fi, Cleaning, and Maintenance with warden resolution logging.
-- **Campus Notice Board**: Targeted broadcasts for All Students, Boys Hostels, Girls Hostels, or Wardens.
-- **Comprehensive Reports & Analytics**: Live audit tables with 1-click **CSV Export** and print-ready media views.
+[![React](https://img.shields.io/badge/React-19.0.0-61dafb?style=flat&logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF?style=flat&logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.17-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🛠️ Technology Stack
+## 🌟 Modern Architecture & Highlights
 
-| Layer | Technologies Used |
-| :--- | :--- |
-| **Backend** | Python 3, Flask 3.x |
-| **Database & ORM** | SQLite 3, Flask-SQLAlchemy 3.x |
-| **Authentication** | Werkzeug Security (PBKDF2/SHA-256 password hashing), Flask Session RBAC |
-| **Frontend Framework** | HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3.3 |
-| **Icons & Typography** | Font Awesome 6.5.1, Google Fonts ('Inter') |
-| **Data Visualizations**| Chart.js 4.4.2 (Donut occupancy chart, room distribution bars) |
+- **Pure React 19 + Vite + Tailwind CSS Architecture**: 100% decoupled client-side Single Page Application with instantaneous sub-second route transitions via `react-router-dom` v7.
+- **Client-Side Persistent Demo Database (`LocalStorage`)**: Full relational schema, reactive state synchronization across tabs via `DatabaseContext` and `StorageEvent` listeners, zero server latency, and a 1-click **Reset Demo Data** tool in the navigation bar.
+- **Intelligent Smart Allocation Engine**: Real-time algorithmic matching based on:
+  $$\text{Composite Score} = (\text{CGPA} \times 0.6) + (\min(\frac{\text{Distance}}{100}, 10) \times 0.4)$$
+  Strictly enforces gender isolation, residence preference matching, capacity availability, and bed assignment atomicity.
+- **Role-Based Access Control (RBAC)**: Dedicated, protected portal interfaces for **Admin**, **Hostel Warden**, and **Student** with automated route guards and session management.
+- **Visual Bed & Room Barometer**: Color-coded live matrix of rooms and individual beds (Vacant = Emerald, Partial = Amber, Full = Rose) with real-time occupancy percentages.
+- **End-to-End Application Pipeline**: Online submission, eligibility scoring, approval queue, smart batch allocation, and visual progress tracking.
+- **Digital Grievance Redressal**: Real-time ticketing for Electricity, Water, Wi-Fi, Cleaning, and Maintenance with Warden resolution logging.
+- **Campus Notice Board**: Targeted bulletins categorized by All Students, Boys Hostels, Girls Hostels, or Wardens.
+- **Live CSV Export & Print Reports**: Instant client-side CSV downloads for Student Directories, Room Inventories, and Allocations.
 
 ---
 
 ## 👥 Pre-Configured Demo Credentials
 
-For quick evaluation during project demonstration, the database comes pre-seeded with realistic records:
+The application includes 1-click quick-login buttons on the Login page for instant demonstration:
 
-| Role | Username | Password | Notes & Assigned Domain |
+| Role | Username | Password | Assigned Domain / Identity |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `admin` | `admin123` | Full access across all halls, algorithms & reports |
-| **Warden (Boys)** | `warden_boys` | `warden123` | Dr. Rajesh Sharma (SR University Boys Hostel BH-05) |
-| **Warden (Girls)** | `warden_girls` | `warden123` | Prof. Sunita Deshmukh (SR University Girls Hostel GH-05) |
-| **Student (Allocated)** | `rahul_sharma` | `student123` | Rahul Sharma (Room BH-101, SR University Boys) |
-| **Student (Allocated)** | `priya_patel` | `student123` | Priya Patel (Room GH-101, SR University Girls) |
-| **Student (Queued)** | `vikram_singh` | `student123` | Approved application ready for Smart Allocation |
-| **Student (Fresher)** | `divya_mehta` | `student123` | Pending application awaiting Admin Review |
-
-> *Tip: The login page includes 1-click credential autofill buttons for Admin, Warden, and Student.*
+| **System Admin** | `admin` | `admin123` | Full access across all residence halls, room matrix & smart engine |
+| **Boys Warden** | `warden_boys` | `warden123` | Dr. Rajesh Sharma (SR University Boys Hostel BH-05) |
+| **Girls Warden** | `warden_girls` | `warden123` | Prof. Sunita Deshmukh (SR University Girls Hostel GH-05) |
+| **Allocated Student** | `rahul_sharma` | `student123` | Rahul Sharma (Room BH-101, BH-05) |
+| **Allocated Student** | `priya_patel` | `student123` | Priya Patel (Room GH-101, GH-05) |
+| **Queued Student** | `vikram_singh` | `student123` | Approved application ready for smart allocation |
+| **Fresher Student** | `divya_mehta` | `student123` | Pending application awaiting review |
 
 ---
 
-## 🚀 Installation & Running Locally in VS Code
+## 🛠️ Technology Stack
+
+| Layer | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | React 19.0.0 | High-performance component-driven user interface |
+| **Build Tool & Bundler** | Vite 6.2.0 | Next-generation ESM bundler with hot module replacement (HMR) |
+| **Styling** | Tailwind CSS 3.4.17 + PostCSS | Dark navy `#071739` and neon cyan `#00d2ff` modern design system |
+| **Routing** | React Router DOM v7 | Client-side routing with nested layouts and RBAC guards |
+| **Icons** | Lucide React | High-clarity SVG icon system |
+| **State & Persistence**| React Context + LocalStorage | Reactive relational state engine with seed automation |
+| **Deployment** | Vercel SPA | Static edge hosting with SPA URL rewrites via `vercel.json` |
+
+---
+
+## 🚀 Running Locally
 
 ### Prerequisites
-- Python 3.8+ installed (3.10 / 3.11 recommended).
-- Git installed (optional).
+- Node.js `18.x` or higher installed
+- npm `9.x` or higher installed
 
-### Step 1: Open Project in VS Code
-Open your terminal in VS Code (`Ctrl + ~`) and navigate to the project directory:
+### Step 1: Clone the Repository
 ```bash
-cd "smart_hostel_allocation"
+git clone https://github.com/vishnuvardhanbathini/smart-hostel-allocation-system.git
+cd smart-hostel-allocation-system
 ```
 
-### Step 2: (Optional) Create & Activate Virtual Environment
+### Step 2: Install Dependencies
 ```bash
-# Windows PowerShell / CMD:
-python -m venv venv
-venv\Scripts\activate
-
-# macOS / Linux:
-python3 -m venv venv
-source venv/bin/activate
+npm install
 ```
 
-### Step 3: Install Required Dependencies
+### Step 3: Run Development Server
 ```bash
-pip install -r requirements.txt
+npm run dev
 ```
+Open your browser and navigate to `http://localhost:5173`.
 
-### Step 4: Run the Application
+### Step 4: Build for Production
 ```bash
-python app.py
+npm run build
 ```
+The optimized production bundle will be generated in `dist/`.
 
-The database (`database/hostel.db`) will be automatically created and populated with realistic sample data upon first run.
-
-### Step 5: Open in Your Browser
-Navigate to:
-```
-http://127.0.0.1:5000/
+To test the production build locally:
+```bash
+npm run preview
 ```
 
 ---
 
-## 🗄️ Database Architecture
+## 📁 Project Structure
 
-The SQLite database comprises 9 relational tables:
-1. `users`: Authentication identities, password hashes, and user roles (`admin`, `student`, `warden`).
-2. `students`: Academic profiles, student IDs, departments, phone, gender, and emergency contacts.
-3. `wardens`: Residence hall supervisor identities, contact numbers, and office locations.
-4. `hostels`: Residence buildings, hostel types (Boys/Girls/Co-ed), floors, and facilities.
-5. `rooms`: Room numbers, floor levels, room types (Single/Double/Triple), capacities, bed occupancy, and semester pricing.
-6. `applications`: Student accommodation requests, preferred hostels, CGPA, distance, and approval stages.
-7. `allocations`: Active and historical room & bed assignments mapped to students.
-8. `complaints`: Maintenance issues categorized by discipline, priority, and warden remarks.
-9. `notices`: Official campus broadcast bulletins with target audience filters.
-10. `notifications`: Personal system notifications delivered to user notification trays.
+```text
+smart_hostel_allocation/
+├── public/
+│   ├── favicon.svg             # Modern building SVG favicon
+│   ├── favicon.ico             # Fallback ICO icon
+│   └── images/
+│       ├── hostelimage.jpg     # Campus hero photography
+│       └── kitsboyshostel.jpg  # Residence hall photography
+├── src/
+│   ├── components/             # Reusable UI elements
+│   │   ├── Navbar.jsx          # Responsive brand navigation & reset demo tool
+│   │   ├── Footer.jsx          # Institutional footer
+│   │   ├── Sidebar.jsx         # Role-tailored collapsible sidebar navigation
+│   │   ├── ProtectedRoute.jsx  # Authentication route guard
+│   │   ├── RoleBasedRoute.jsx  # Role authorization route guard
+│   │   ├── NotificationBell.jsx# Interactive notification badge dropdown
+│   │   └── StatCard.jsx        # Glassmorphic KPI metric cards
+│   ├── context/
+│   │   ├── AuthContext.jsx     # User authentication and session management
+│   │   ├── DatabaseContext.jsx # Reactive LocalStorage state sync
+│   │   └── ToastContext.jsx    # Animated notification alerts
+│   ├── layouts/
+│   │   ├── PublicLayout.jsx    # Public site frame (Navbar + Content + Footer)
+│   │   └── DashboardLayout.jsx # Portal frame (Sidebar + Topbar + Content)
+│   ├── pages/
+│   │   ├── Home.jsx            # Public landing page with features & live metrics
+│   │   ├── Login.jsx           # Portal login with 1-click quick-demo credentials
+│   │   ├── Register.jsx        # Student registration workflow
+│   │   ├── HostelDetails.jsx   # Public hostel amenities, rules & room inventory
+│   │   ├── admin/              # Administrator portal pages
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── ManageStudents.jsx
+│   │   │   ├── ManageHostels.jsx
+│   │   │   ├── ManageRooms.jsx
+│   │   │   ├── Applications.jsx
+│   │   │   ├── SmartAllocation.jsx
+│   │   │   ├── AdminComplaints.jsx
+│   │   │   ├── AdminNotices.jsx
+│   │   │   └── Reports.jsx
+│   │   ├── warden/             # Hostel warden portal pages
+│   │   │   ├── WardenDashboard.jsx
+│   │   │   ├── WardenRooms.jsx
+│   │   │   ├── WardenStudents.jsx
+│   │   │   ├── WardenComplaints.jsx
+│   │   │   └── WardenNotices.jsx
+│   │   └── student/            # Student portal pages
+│   │       ├── StudentDashboard.jsx
+│   │       ├── StudentProfile.jsx
+│   │       ├── ApplyHostel.jsx
+│   │       ├── ApplicationStatus.jsx
+│   │       ├── RoomDetails.jsx
+│   │       ├── StudentComplaints.jsx
+│   │       ├── StudentNotices.jsx
+│   │       └── Notifications.jsx
+│   ├── services/
+│   │   ├── authService.js      # Login verification & session storage
+│   │   ├── db.js               # Relational LocalStorage CRUD database operations
+│   │   ├── seedData.js         # Comprehensive demo dataset (users, hostels, rooms)
+│   │   └── allocationEngine.js # Algorithmic merit & distance multi-factor allocation
+│   ├── utils/
+│   │   └── exportCSV.js        # Dynamic CSV generation & browser download
+│   ├── styles/
+│   │   └── index.css           # Tailwind directives & glassmorphic custom utilities
+│   ├── App.jsx                 # App routing definition (22 routes)
+│   └── main.jsx                # Application root entry point
+├── index.html                  # HTML5 SPA container
+├── package.json                # Project dependencies and npm scripts
+├── vite.config.js              # Vite bundler configuration
+├── tailwind.config.js          # Tailwind custom palette & styling rules
+├── postcss.config.js           # PostCSS autoprefixer plugins
+└── vercel.json                 # Vercel SPA routing rewrite configuration
+```
 
 ---
 
-## 🎯 Testing & Demonstration Workflow
+## 🎯 Guided Demonstration & Testing Workflows
 
-1. **Test Admin Smart Allocation**:
-   - Log in as `admin` (`admin123`).
-   - Go to **Smart Allocation Hub**.
-   - Notice students queued in the priority list (e.g., Vikram Singh).
-   - Click **Run Smart Auto-Allocation**.
-   - Watch the system match gender, room preference, and assign next available beds with zero conflicts!
-2. **Test Student Application & Status**:
-   - Log in as `divya_mehta` or register a new student account.
-   - Go to **Hostel Application** to submit preferences.
-   - Switch back to Admin to Approve, or run the Smart Engine.
-   - Refresh Student portal to view allocated room, roommates, and assigned warden contact.
-3. **Test Complaint Management**:
-   - As a student, navigate to **File Complaint** and report an issue (e.g. Wi-Fi or Electrical).
-   - Log in as the respective **Warden** (`warden_boys` or `warden_girls`).
-   - Open **Student Complaints**, change status to `In Progress` or `Resolved`, and add warden remarks.
-   - Student receives an immediate notification in their tray.
-4. **Test Reports & Exports**:
-   - Under Admin, open **Reports & Analytics**.
-   - Download CSV reports for Active Allocations, Hostel Occupancy, or Vacant Rooms.
-   - Click **Print Formal Report** to view printable layout.
+### 1. Smart Room Allocation Engine
+1. Log in as **Admin** using the 1-click `Admin` button or credentials (`admin` / `admin123`).
+2. Navigate to **Smart Allocation** in the sidebar.
+3. Review queued approved students (e.g. Vikram Singh, CGPA 8.4, Distance 340km).
+4. Click **Run Smart Auto-Allocation**.
+5. Observe the automated bed assignment matching gender, capacity, and preference with zero race conditions!
+
+### 2. Student Application Pipeline
+1. Log in as **Student** (`divya_mehta` / `student123`).
+2. Go to **Application Status** to monitor real-time approval stages.
+3. Apply for accommodation or switch rooms from **Apply Hostel**.
+4. Log back in as **Admin** -> **Applications** to Approve or Reject with instant status updates.
+
+### 3. Grievance Redressal System
+1. As student **Rahul Sharma**, go to **Complaints** and file a maintenance request.
+2. Log in as **Warden** (`warden_boys` / `warden123`).
+3. Open **Complaints**, inspect the issue, change status to `In Progress` or `Resolved`, and add resolution remarks.
+4. Rahul receives a real-time notification alert in his notification tray.
+
+### 4. Data Export & Reports
+1. Under Admin, navigate to **Reports & Analytics**.
+2. Click **Export CSV** on Students Directory, Active Allocations, or Room Inventory.
+3. The browser instantly downloads clean, formatted `.csv` spreadsheets.
 
 ---
 
-## 🛡️ Security Features
-- **Werkzeug PBKDF2/SHA-256 password hashing**.
-- **Session-level role-based route guards** (`@login_required`, `@admin_required`, `@student_required`, `@warden_required`).
-- **Gender isolation checks** preventing cross-gender room assignments.
-- **Atomic transactions** ensuring room capacities and occupancy numbers stay synchronized.
-- **Cascading deletions & protections** against deleting hostels with active occupants.
+## 🔌 Connecting Supabase in the Future
+
+The application is architected with a decoupled `src/services/` layer (`db.js`, `authService.js`). To swap out the client demo database for Supabase PostgreSQL:
+1. Install `@supabase/supabase-js`.
+2. Configure environment variables in `.env`:
+   ```bash
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key
+   ```
+3. Update `src/services/db.js` and `src/services/authService.js` to execute queries using `supabase.from('...')` instead of `localStorage`. The React component interfaces remain identical!
 
 ---
 
 ## 📄 License
-Academic Coursework Demonstration &bull; SESD Capstone Project &copy; 2024-2025.
-
-=======
-# smart-hostel-allocation-system
-Smart Hostel Allocation and Management System using Python Flask
->>>>>>> 3e66a49e035ae41fb304bf2789aec855b469e318
+Academic Coursework Demonstration &bull; SESD Capstone Project &copy; 2024-2026.

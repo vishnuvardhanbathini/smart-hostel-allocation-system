@@ -1,3 +1,13 @@
+# Node / React
+node_modules/
+.npm/
+dist/
+dist-ssr/
+*.local
+
+# Python Legacy Backup (Preserved locally, omitted from Git runtime)
+python_backend_backup/
+
 # Virtual environments
 venv/
 .venv/
