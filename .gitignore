@@ -1,17 +1,21 @@
-<<<<<<< HEAD
+# Virtual environments
 venv/
 .venv/
+env/
 .env
-__pycache__/
-*.pyc
-instance/
-*.db
-.DS_Store
-=======
+
+# Vercel
+.vercel/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
+*.pyc
+
+# Instance and local files
+instance/
+.DS_Store
 
 # C extensions
 *.so
@@ -228,4 +232,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
->>>>>>> 3e66a49e035ae41fb304bf2789aec855b469e318
