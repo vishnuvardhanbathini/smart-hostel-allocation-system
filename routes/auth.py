@@ -71,9 +71,48 @@ def notify_user(user_id, title, message, notification_type='info', link=None):
         db.session.rollback()
         print(f"Error creating notification: {e}")
 
+@auth_bp.route('/login/quick/<role>')
+def quick_login(role):
+    """Instant 1-click login for project demos and testing."""
+    session.clear()
+    role_lower = (role or '').lower().strip()
+    
+    if role_lower == 'admin':
+        user = User.query.filter_by(username='admin').first()
+    elif role_lower in ('warden', 'warden_boys'):
+        user = User.query.filter_by(username='warden_boys').first()
+    elif role_lower == 'warden_girls':
+        user = User.query.filter_by(username='warden_girls').first()
+    elif role_lower == 'student':
+        user = User.query.filter_by(username='rahul_sharma').first()
+    else:
+        user = User.query.filter_by(username=role).first()
+
+    if user:
+        session['user_id'] = user.id
+        session['username'] = user.username
+        session['role'] = user.role
+        session['display_name'] = user.display_name
+        flash(f'Signed in as {user.display_name} ({user.role.capitalize()})', 'success')
+        
+        if user.role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        elif user.role == 'warden':
+            return redirect(url_for('warden.dashboard'))
+        else:
+            return redirect(url_for('student.dashboard'))
+
+    flash(f'Demo account for "{role}" not found.', 'warning')
+    return redirect(url_for('auth.login'))
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'user_id' in session:
+    # If the user requests to switch accounts or selects a demo role, clear existing session
+    if request.args.get('switch') or request.args.get('role'):
+        session.clear()
+
+    # For GET requests only, if already authenticated and not switching, redirect to active dashboard
+    if request.method == 'GET' and 'user_id' in session:
         role = session.get('role')
         if role == 'admin':
             return redirect(url_for('admin.dashboard'))
@@ -83,6 +122,8 @@ def login():
             return redirect(url_for('student.dashboard'))
 
     if request.method == 'POST':
+        # Clear any prior session for clean new login
+        session.clear()
         username_or_email = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         remember = bool(request.form.get('remember'))
@@ -100,7 +141,6 @@ def login():
                 flash('Your account has been deactivated. Please contact the administrator.', 'danger')
                 return render_template('login.html')
 
-            session.clear()
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
